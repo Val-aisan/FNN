@@ -16,8 +16,8 @@ typedef struct  n_data {
     double  weight;
     double  bias;
     double  value;
-    n_data  *prev_layer;
-    n_data  *next;
+    struct n_data  *prev_layer;
+    struct n_data  *next;
 }               node_s;
 
 typedef struct nn_data{
