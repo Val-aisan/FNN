@@ -1,6 +1,6 @@
 #include "nn.h"
 
-/*double  normal_distr(void)
+double  normal_distr(void)
 {
     double   u1;
     double   u2;
@@ -14,9 +14,9 @@
 
 }
 
-void    inputl_nodes(node_s *head, double **input)
+void    inputl_nodes(node_s **head, double *input)
 {
-    node_s  *current = head;
+    node_s  *current = *head;
     int i = 0;
 
     while (current)
@@ -31,15 +31,14 @@ void    inputl_nodes(node_s *head, double **input)
 
 }
 
-void    outputl_nodes(node_s *head, network_s *network)
+void    outputl_nodes(node_s **head, network_s *network)
 {
-    node_s  *current = head;
+    node_s  *current = *head;
     int hidden_layer = network->hidden_layer;
-    int i = 0;
 
     while (current)
     {
-        current->layer = hidden_layer - 1;
+        current->layer = hidden_layer + 1;
         current->weight = 0;
         current->bias = 0;
         current->value = 0;
@@ -49,10 +48,9 @@ void    outputl_nodes(node_s *head, network_s *network)
 
 }
 
-void    hiddenl_nodes(node_s *head, network_s *network, int layer)
+void    hiddenl_nodes(node_s **head, network_s *network, int layer)
 {
-    node_s  *current = head;
-    int i = 0;
+    node_s  *current = *head;
 
     while (current)
     {
@@ -68,19 +66,20 @@ void    hiddenl_nodes(node_s *head, network_s *network, int layer)
 
 //when iterating on linked list use double pointer othewise the pointer is moved 
 
-int nodes_init(network_s *network)
+int nodes_init(network_s **network, int cycle)
 {
     int i = 0;
 
-    while (network->layers[i])
+    while ((*network)->layers[i])
     {
         if (i == 0)
-            inputl_nodes(network->layers[i], network->inputs);
-        else if (!network->layers[i + 1])
-            outputl_nodes(network->layers[i], network);
+            inputl_nodes(&((*network)->layers[i]), (*network)->inputs[cycle]);
+        else if (!(*network)->layers[i + 1])
+            outputl_nodes(&((*network)->layers[i]), *network);
         else
-            hiddenl_nodes(network->layers[i], network, i);
+            hiddenl_nodes(&((*network)->layers[i]), *network, i);
+        i++;
 
     }
+    return (0);
 }
-*/
