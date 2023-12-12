@@ -28,15 +28,15 @@ int layers_init(network_s  **ntwrk)
         //printf("i: %d, layers: %d\n", i,  layers);
         if (i == 0)
         {
-            (*ntwrk)->layers[i] = lst_build((*ntwrk)->input_nodes);
+            (*ntwrk)->layers[i] = lst_build((*ntwrk)->input_nodes, (*ntwrk)->hidden_layer_nodes);
         }
         else if (i + 1 == layers)
         {
-            (*ntwrk)->layers[i] = lst_build((*ntwrk)->output_nodes);
+            (*ntwrk)->layers[i] = lst_build((*ntwrk)->output_nodes,0);
         }
         else
         {
-            (*ntwrk)->layers[i] = lst_build((*ntwrk)->hidden_layer_nodes);
+            (*ntwrk)->layers[i] = lst_build((*ntwrk)->hidden_layer_nodes, (*ntwrk)->hidden_layer_nodes);
         }
         if (!(*ntwrk)->layers[i])
             return (-1);
@@ -69,11 +69,11 @@ int data_init(char *file, network_s **new_network)
             token  = strtok(line, ",");
             while (i < (*new_network)->input_nodes)
             {
-                (*new_network)->inputs[row - 1][i] = (double)atoi(token);
+                (*new_network)->inputs[row - 1][i] = (double)atof(token);
                 token = strtok(NULL, ",");
                 i++;
             }
-            (*new_network)->observed_outputs[row - 1] = (double)atoi(token);
+            (*new_network)->observed_outputs[row - 1] = (double)atof(token);
         }
         row++;
     }
@@ -140,13 +140,18 @@ int data_file_format(char *file, network_s **new_network)
             }
         }
     }
+    if (rows != ((*new_network)->input_nodes + 1))
+    {
+        printf("Error: Inputs nodes do not match training file data\n");
+        return (-1);
+    }
     fclose(fp);
     if (ntwrk_inputs_alloc(rows, columns, new_network) == -1)
         return (-1);
     return (0);  
 }
 
-node_s  *lst_build(int nodes_nbr)
+node_s  *lst_build(int nodes_nbr, int hiddenl_nodes)
 {
     node_s  *head = 0;
     node_s  *node;
@@ -155,7 +160,7 @@ node_s  *lst_build(int nodes_nbr)
     //printf("nodes_nbr: %d\n", nodes_nbr);
     while (i < nodes_nbr)
     {
-        node = new_node();
+        node = new_node(hiddenl_nodes);
         if (!node)
             return (NULL);
         add_node(node, &head);

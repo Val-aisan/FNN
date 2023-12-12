@@ -8,6 +8,7 @@ double  softplus(double x)
 void    print_network_s(network_s *new_network)
 {
     int i = 0;
+    int j = 0;
     printf("\n");
     printf("ntwrk input: %d\n",new_network->input_nodes);
     printf("ntwrk output: %d\n",new_network->output_nodes);
@@ -24,7 +25,12 @@ void    print_network_s(network_s *new_network)
             printf("node, ");
             printf("layer: %d, ", ptr->layer);
             printf("bias: %f, ", ptr->bias);
-            printf("weight: %f, ", ptr->weight);
+            j = 0;
+            while (j < new_network->hidden_layer_nodes)
+            {
+                printf("weight%d: %f, ", j, ptr->weights[j]);
+                j++;
+            }
             printf("value: %f\n", ptr->value);
 
             ptr = ptr->next;
@@ -33,7 +39,6 @@ void    print_network_s(network_s *new_network)
         i++;
     }
     i = 0;
-    int j;
     while (new_network->inputs[i] != 0)
     {
         j = 0;
@@ -66,13 +71,19 @@ void    add_node(node_s *new_node, node_s **head)
     current->next = new_node;
 }
 
-node_s  *new_node(void)
+node_s  *new_node(int nodes_hiddenl)
 {
     node_s  *new_node;
 
     new_node = malloc(sizeof(node_s));
     if (!new_node)
         return (NULL);
+    new_node->weights = malloc(sizeof(double) * nodes_hiddenl);
+    if (!new_node->weights)
+    {
+        free(new_node);
+        return (NULL);
+    } 
     new_node->next = 0;
     return(new_node);
 
