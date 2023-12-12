@@ -12,7 +12,7 @@
 
 typedef struct  n_data{
     int     layer;
-    double  weight;
+    double  *weights;
     double  bias;
     double  value;
     struct n_data  *prev_layer;
@@ -36,9 +36,9 @@ int     network_init(char **argv, network_s **new_network);
 void    print_network_s(network_s *new_network);
 int     layers_init(network_s **network);
 void    add_node(node_s *new_node, node_s **head);
-node_s  *new_node(void);
+node_s  *new_node(int nodes_hiddenl);
 double  softplus(double x);
-node_s  *lst_build(int nodes_nbr);
+node_s  *lst_build(int nodes_nbr, int hiddenl_nodes);
 int     nodes_init(network_s **network, int cycle);
 int     data_init(char *file, network_s **new_network);
 int     data_file_format(char *file, network_s **new_network);
