@@ -50,6 +50,8 @@ int main(int argc, char **argv)
         return (0);
     if (nodes_init(&new_network, cycle))
         return (0);
+    if (layer_sum(&new_network))
+        return (0);
     print_network_s(new_network);
     cycle++;
     //if (nodes_init(&new_network))

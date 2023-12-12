@@ -42,6 +42,7 @@ node_s  *lst_build(int nodes_nbr, int hiddenl_nodes);
 int     nodes_init(network_s **network, int cycle);
 int     data_init(char *file, network_s **new_network);
 int     data_file_format(char *file, network_s **new_network);
+int     layer_sum(network_s **ntwrk);
 
 
 
