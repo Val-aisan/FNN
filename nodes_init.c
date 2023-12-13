@@ -78,6 +78,7 @@ int nodes_init(network_s **network, int cycle)
 {
     int i = 0;
 
+    srand(time(NULL));
     while ((*network)->layers[i])
     {
         if (i == 0)
