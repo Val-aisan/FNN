@@ -25,12 +25,15 @@ void    print_network_s(network_s *new_network)
             printf("node, ");
             printf("layer: %d, ", ptr->layer);
             printf("bias: %f, ", ptr->bias);
+            printf("value: %f", ptr->value);
             j = 0;
             while (j < new_network->hidden_layer_nodes)
             {
                 printf("weight%d: %f, ", j, ptr->weights[j]);
                 j++;
             }
+            if  (i == 3)
+                printf("hey\n");
             printf("value: %f\n", ptr->value);
 
             ptr = ptr->next;

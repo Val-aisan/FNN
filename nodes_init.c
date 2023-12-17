@@ -16,7 +16,7 @@ double  normal_distr(void)
 
 }
 
-void    inputl_nodes(node_s **head, double *input, network_s *network)
+void    inputl_nodes(node_s **head,network_s *network)
 {
     node_s  *current = *head;
     int i = 0;
@@ -28,9 +28,9 @@ void    inputl_nodes(node_s **head, double *input, network_s *network)
         j = 0;
         while (j < network->hidden_layer_nodes)
             current->weights[j++] = normal_distr();
+        current->value = 0;
         current->bias = 0;
         current->prev_layer = 0;
-        current->value = input[i++];
         current = current->next;
     }
 
@@ -74,7 +74,7 @@ void    hiddenl_nodes(node_s **head, network_s *network, int layer)
 
 //when iterating on linked list use double pointer othewise the pointer is moved 
 
-int nodes_init(network_s **network, int cycle)
+int nodes_init(network_s **network)
 {
     int i = 0;
 
@@ -82,7 +82,7 @@ int nodes_init(network_s **network, int cycle)
     while ((*network)->layers[i])
     {
         if (i == 0)
-            inputl_nodes(&((*network)->layers[i]), (*network)->inputs[cycle], *network);
+            inputl_nodes(&((*network)->layers[i]), *network);
         else if (!(*network)->layers[i + 1])
             outputl_nodes(&((*network)->layers[i]), *network);
         else

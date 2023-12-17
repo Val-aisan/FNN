@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         return (0);
     if (data_init(argv[5], &new_network))
         return (0);
-    if (nodes_init(&new_network, cycle))
+    if (nodes_init(&new_network))
         return (0);
     if (layer_sum(&new_network))
         return (0);

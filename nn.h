@@ -39,10 +39,10 @@ void    add_node(node_s *new_node, node_s **head);
 node_s  *new_node(int nodes_hiddenl);
 double  softplus(double x);
 node_s  *lst_build(int nodes_nbr, int hiddenl_nodes);
-int     nodes_init(network_s **network, int cycle);
+int     nodes_init(network_s **network);
 int     data_init(char *file, network_s **new_network);
 int     data_file_format(char *file, network_s **new_network);
-int     layer_sum(network_s **ntwrk);
+int     compute_output(network_s **ntwrk);
 
 
 
