@@ -19,7 +19,6 @@ double  normal_distr(void)
 void    inputl_nodes(node_s **head,network_s *network)
 {
     node_s  *current = *head;
-    int i = 0;
     int j = 0;
 
     while (current)

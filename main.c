@@ -35,8 +35,9 @@ int is_error(int argc, char **argv)
 //usage: ./programm "input nodes" "hidden layer" "node per hidden layer" "output nodes" "training file"
 int main(int argc, char **argv)
 {
-    network_s   *new_network;
-    int         cycle = 0;
+    network_s       *new_network;
+    network_mat_s   *network_matrices;
+    int             cycle = 0;
     
     if (is_error(argc, argv))
         return (0);
@@ -50,8 +51,11 @@ int main(int argc, char **argv)
         return (0);
     if (nodes_init(&new_network))
         return (0);
-    if (layer_sum(&new_network))
+    update_inputl(&new_network, new_network->inputs[cycle]);
+    if (matrix_init(new_network, &network_matrices))
         return (0);
+    //if (layer_sum(&new_network))
+    //   return (0);
     print_network_s(new_network);
     cycle++;
     //if (nodes_init(&new_network))

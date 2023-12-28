@@ -1,5 +1,28 @@
 #include "nn.h"
 
+int node_per_layer(network_s **ntwrk)
+{
+    int layers = (*ntwrk)->hidden_layer + 2;
+    int i = 0;
+
+    (*ntwrk)->nodes_per_layer = malloc(sizeof(int) * layers + 1);
+    if (!(*ntwrk)->nodes_per_layer)
+        return (-1);
+    while (i < layers)
+    {
+        if (i == 0)
+            (*ntwrk)->nodes_per_layer[i] = (*ntwrk)->input_nodes;
+        else if (i + 1 == layers)
+            (*ntwrk)->nodes_per_layer[i] = (*ntwrk)->output_nodes;
+        else
+            (*ntwrk)->nodes_per_layer[i]  = (*ntwrk)->hidden_layer_nodes;
+        i++;
+    }
+    (*ntwrk)->nodes_per_layer[i] = 0;
+    return (0);
+    
+}
+
 int network_init(char **argv, network_s **ntwrk)
 {   
     *ntwrk = malloc(sizeof(network_s));
@@ -10,7 +33,7 @@ int network_init(char **argv, network_s **ntwrk)
     (*ntwrk)->hidden_layer_nodes = atoi(argv[3]);
     (*ntwrk)->output_nodes = atoi(argv[4]);
     (*ntwrk)->layers = malloc(sizeof(node_s *) * (atoi(argv[2]) + 3));
-    if (!(*ntwrk)->layers)
+    if (!(*ntwrk)->layers || node_per_layer(ntwrk))
     {
         //free
         return (-1);

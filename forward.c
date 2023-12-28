@@ -54,7 +54,7 @@ void    update_inputl(network_s **network, double *inputs_set)
 double  compute_ssr(network_s **network)
 {
     int     cycle = 0;
-    node_s  *inputl = (*network)->layers[0];
+   //  node_s  *inputl = (*network)->layers[0];
     double  predicted_output;
     double  ssr = 0;
 

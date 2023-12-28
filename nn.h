@@ -25,10 +25,28 @@ typedef struct nn_data{
     int     hidden_layer;
     int     hidden_layer_nodes;
     int     data_cycles;
+    int     *nodes_per_layer;
     double  **inputs;
     double  *observed_outputs;
     node_s  **layers;
 }           network_s;
+
+typedef struct m_data{
+    int     m;
+    int     n;
+    double  *x;
+    double  *b;
+    double  *z;
+    double  *a;
+    double  **w;
+}           matrix_s;
+
+typedef struct mm_data{
+    matrix_s    *layer;
+    double      ssr;
+    double      psy;
+}               network_mat_s;
+
 
 
 double  normal_distr(void);
@@ -43,6 +61,7 @@ int     nodes_init(network_s **network);
 int     data_init(char *file, network_s **new_network);
 int     data_file_format(char *file, network_s **new_network);
 int     compute_output(network_s **ntwrk);
+void    update_inputl(network_s **network, double *inputs_set);
 
 
 
