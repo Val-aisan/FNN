@@ -9,9 +9,10 @@
 #include <string.h>
 #include <time.h> 
 
-
+//structure d'un node d'une couche d'un réseau
 typedef struct  n_data{
     int     layer;
+    int     weights_nbr;
     double  *weights;
     double  bias;
     double  value;
@@ -19,6 +20,7 @@ typedef struct  n_data{
     struct n_data  *next;
 }               node_s;
 
+//structure d'un réseau chaque couche est une  liste chainée de structures node_s
 typedef struct nn_data{
     int     input_nodes;
     int     output_nodes;
@@ -31,6 +33,14 @@ typedef struct nn_data{
     node_s  **layers;
 }           network_s;
 
+//structure d'une matrix dimension/valeurs
+typedef struct k_data{
+    int     row;
+    int     col;
+    double  **val;
+}           matrix_s;
+
+//structure d'une couche du réseau, les paramètres sont des vecteurs ou matrices 
 typedef struct m_data{
     int     m;
     int     n;
@@ -39,32 +49,42 @@ typedef struct m_data{
     double  *z;
     double  *a;
     double  **w;
-}           matrix_s;
+}           layer_s;
 
+//
 typedef struct mm_data{
-    matrix_s    *layer;
+    layer_s    **layer;
     double      ssr;
     double      psy;
 }               network_mat_s;
 
-
-
+//utils
 double  normal_distr(void);
-int     network_init(char **argv, network_s **new_network);
-void    print_network_s(network_s *new_network);
-int     layers_init(network_s **network);
+double  softplus(double x);
 void    add_node(node_s *new_node, node_s **head);
 node_s  *new_node(int nodes_hiddenl);
-double  softplus(double x);
-node_s  *lst_build(int nodes_nbr, int hiddenl_nodes);
+int     is_error(int argc, char **argv);
+
+//network_init
+int     network_init(char **argv, network_s **new_network);
+
+//nodes_init
 int     nodes_init(network_s **network);
-int     data_init(char *file, network_s **new_network);
-int     data_file_format(char *file, network_s **new_network);
-int     compute_output(network_s **ntwrk);
-void    update_inputl(network_s **network, double *inputs_set);
 
+//network_file_init
+int file_data_init(network_s **network, char **argv);
 
+//compute_output
+int     compute_output(network_s **ntwrk, double *inputs_set);
 
+//ft_malloc
+void    free_netwrk(network_s **network);
 
+//matrix
+int     matrix_init(network_s *network);
 
-#endif 
+//print_structures
+void    print_network_s(network_s *new_network);
+void    print_layers(network_mat_s *matrices);
+
+#endif
