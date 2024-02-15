@@ -27,9 +27,10 @@ typedef struct nn_data{
     int     hidden_layer;
     int     hidden_layer_nodes;
     int     data_cycles;
+    int     current_cycle;
     int     *nodes_per_layer;
     double  **inputs;
-    double  *observed_outputs;
+    double  **observed_outputs;
     node_s  **layers;
 }           network_s;
 
@@ -39,6 +40,12 @@ typedef struct k_data{
     int     col;
     double  **val;
 }           matrix_s;
+
+typedef struct kk_data{
+    matrix_s    **layers;
+    matrix_s    **psy;
+    matrix_s    *old_psy;
+}               gradient_s;
 
 //structure d'une couche du réseau, les paramètres sont des vecteurs ou matrices 
 typedef struct m_data{
@@ -57,6 +64,8 @@ typedef struct mm_data{
     double      ssr;
     double      psy;
 }               network_mat_s;
+
+
 
 //utils
 double  normal_distr(void);
@@ -81,10 +90,21 @@ int     compute_output(network_s **ntwrk, double *inputs_set);
 void    free_netwrk(network_s **network);
 
 //matrix
-int     matrix_init(network_s *network);
+network_mat_s   *matrix_init(network_s *network);
 
 //print_structures
 void    print_network_s(network_s *new_network);
 void    print_layers(network_mat_s *matrices);
+void    print_gradient(gradient_s *gradient);
+void    print_input_output(network_s *new_network);
+
+//grd_init
+int pop_gradient(network_mat_s *matrices, gradient_s **gradient);
+
+//malloc safely
+void    *ft_malloc(size_t size, gradient_s **gradient);
+
+//matrix_op
+void    adjust_psy(network_s *ntwrk, gradient_s **gradient, network_mat_s *matrices);
 
 #endif

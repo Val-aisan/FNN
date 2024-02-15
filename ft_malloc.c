@@ -38,6 +38,51 @@ void    free_netwrk(network_s **network)
 
 }
 
+
+//free an array of  matrix_s structure
+void    free_mat_arr(matrix_s **array)
+{
+    int     i = 0;
+    int     j = 0;
+    double  **values;
+
+    while (array[i])
+    {
+        if (!array[i]->val)
+        {
+            values = array[i]->val;
+            while (values[j])
+                free(values[j++]);
+            free(values);
+        }
+        free(array[i]);
+        i++;
+    }
+
+}
+//free gradient structure
+void    free_gradient(gradient_s **matrices)
+{
+    matrix_s    **layers;
+    matrix_s    **psy;
+    matrix_s    *old_psy;
+
+    if(!(*matrices))
+    {
+        layers = (*matrices)->layers;
+        psy = (*matrices)->psy;
+        old_psy = (*matrices)->old_psy;
+        if(!layers)
+            free_mat_arr(layers);
+        if (!psy)
+            free_mat_arr(psy);
+        if (!old_psy)
+            free(old_psy);
+        free(matrices);
+
+    }
+}
+
 //todo 
 /*void free_matrices(network_mat_s **matrices)
 {
@@ -62,3 +107,18 @@ void    free_netwrk(network_s **network)
     free((*matrices)->layer);
     free((*matrices));
 }*/
+
+void    *ft_malloc(size_t size, gradient_s **gradient)
+{
+    void    *ptr;
+
+    ptr = malloc(size);
+    if (!ptr)
+    {
+        printf("MALLOC ERROR\n");
+        free_gradient(gradient);
+    }
+    return (ptr);
+}
+
+

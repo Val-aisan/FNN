@@ -26,7 +26,15 @@ static int data_init(char *file, network_s **new_network)
                 token = strtok(NULL, ",");
                 i++;
             }
-            (*new_network)->observed_outputs[row - 1] = (double)atof(token);
+            (*new_network)->inputs[row - 1][i] = 0;
+            i = 0;
+            while (i < (*new_network)->output_nodes)
+            {
+                (*new_network)->observed_outputs[row - 1][i] = (double)atof(token);
+                token = strtok(NULL, ",");
+                i++;
+            }
+            (*new_network)->observed_outputs[row - 1][i] = 0;
         }
         row++;
     }
@@ -35,25 +43,40 @@ static int data_init(char *file, network_s **new_network)
 }
 
 //allocate the dynamic field of network structure for file_related data
-static int ntwrk_inputs_alloc(int rows, int columns, network_s **new_network)
+static int ntwrk_inputs_alloc(int rows, network_s **new_network)
 {
     int i = 0;
+    int inputs = (*new_network)->input_nodes;
+    int outputs = (*new_network)->output_nodes;
+
     (*new_network)->data_cycles = rows - 1;
-    (*new_network)->observed_outputs = malloc(sizeof(double) * rows - 1);
+    (*new_network)->observed_outputs = malloc(sizeof(double *) * (rows));
     if (!((*new_network)->observed_outputs))
     {
         perror("Bad alloc for observed outputs");
         return (-1);
     }
-    (*new_network)->inputs = malloc(sizeof(double*) * rows);
+    while (i < (rows - 1))
+    {
+        (*new_network)->observed_outputs[i] = malloc(sizeof(double) * (outputs + 1));
+        if (!((*new_network)->observed_outputs[i]))
+        {
+            perror("Bad alloc for inputs");
+            return (-1);
+        }
+        i++;
+    }
+    (*new_network)->observed_outputs[i] = 0;
+    (*new_network)->inputs = malloc(sizeof(double*) * (rows));
     if (!((*new_network)->inputs))
     {
         perror("Bad alloc for inputs");
         return (-1);
     }
+    i = 0;
     while (i < (rows - 1))
     {
-        (*new_network)->inputs[i] = malloc(sizeof(double) * columns - 1);
+        (*new_network)->inputs[i] = malloc(sizeof(double) * (inputs + 1));
         if (!((*new_network)->inputs[i]))
         {
             perror("Bad alloc for inputs");
@@ -79,7 +102,6 @@ static int data_file_format(char *file, network_s **new_network)
         perror("Can't open the file");
         return (-1);
     }
-    printf("file: %s\n", file);
     while (fgets(line, 200, fp) != NULL)
     {
         rows++;
@@ -93,13 +115,13 @@ static int data_file_format(char *file, network_s **new_network)
             }
         }
     }
-    if (rows != ((*new_network)->input_nodes + 1))
+    if ((columns - (*new_network)->output_nodes) != (*new_network)->input_nodes)
     {
         printf("Error: Inputs nodes do not match training file data\n");
         return (-1);
     }
     fclose(fp);
-    if (ntwrk_inputs_alloc(rows, columns, new_network) == -1)
+    if (ntwrk_inputs_alloc(rows, new_network) == -1)
         return (-1);
     return (0);  
 }

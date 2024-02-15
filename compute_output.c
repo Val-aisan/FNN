@@ -10,7 +10,10 @@ static double node_sum(node_s *node, int h_layer)
     while (prev)
     {
         //printf("value: %f",node->value);
-        sum += prev->value * prev->weights[h_layer];
+        if (prev->weights)
+            sum += prev->value * prev->weights[h_layer];
+        else
+            sum += prev->value;
         prev = prev->next;
     }
     //printf("sum : %f\n", sum);
@@ -46,9 +49,10 @@ int compute_output(network_s **ntwrk, double *inputs_set)
         k = 0;
         while(current)
         {
-            current->value = node_sum(current, k++) + current->bias;
+            current->value = node_sum(current, k) + current->bias;
             current->value = softplus(current->value);
             current = current->next;
+            k++;
         }
         i++;
     }

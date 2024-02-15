@@ -35,7 +35,7 @@ static int matrices_alloc(network_s *network, network_mat_s  **matrices)
 {
     if (!(*matrices))
         return (-1);
-    (*matrices)->layer = malloc(sizeof(layer_s *) * network->hidden_layer + 2);
+    (*matrices)->layer = malloc(sizeof(layer_s *) * (network->hidden_layer + 2));
     if (!((*matrices)->layer))
     {
         free(matrices);
@@ -101,20 +101,20 @@ static int matrices_init(network_s *network, network_mat_s **matrices)
 }
 
 //initialization of networks's layers
-int matrix_init(network_s *network)
+network_mat_s   *matrix_init(network_s *network)
 {
     network_mat_s   *matrices;
     
     matrices = malloc(sizeof(network_mat_s));
     if(matrices_alloc(network, &matrices))
     {
-        return (-1);
+        return (0);
     }
     if (matrices_init(network, &matrices))
     {
-        return (-1);
+        return (0);
     }
-    print_layers(matrices);
-    return (0);           
+    //print_layers(matrices);
+    return (matrices);           
 
 }

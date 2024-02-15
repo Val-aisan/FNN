@@ -8,6 +8,7 @@ static void    inputl_nodes(node_s **head)
     {
         current->layer = 0;
         current->value = 0;
+        current->weights = 0;
         current->bias = 0;
         current->prev_layer = 0;
         current = current->next;

@@ -6,7 +6,7 @@ static int node_per_layer(network_s **ntwrk)
     int layers = (*ntwrk)->hidden_layer + 2;
     int i = 0;
 
-    (*ntwrk)->nodes_per_layer = malloc(sizeof(int) * layers + 1);
+    (*ntwrk)->nodes_per_layer = malloc(sizeof(int) * (layers + 1));
     if (!(*ntwrk)->nodes_per_layer)
         return (-1);
     while (i < layers)
@@ -48,11 +48,12 @@ static int layers_init(network_s  **ntwrk)
 {
     int i = 0;
     int layers = (*ntwrk)->hidden_layer + 2;
-    int weights_nbr;
+    int weights_nbr = 0;
 
     while (i < layers)
     {
-        weights_nbr = (*ntwrk)->nodes_per_layer[i - 1];
+        if (i != 0)
+            weights_nbr = (*ntwrk)->nodes_per_layer[i - 1];
         //printf("i: %d, layers: %d\n", i,  layers);
         if (i == 0)
         {
@@ -87,6 +88,7 @@ int network_init(char **argv, network_s **ntwrk)
     (*ntwrk)->hidden_layer_nodes = atoi(argv[3]);
     (*ntwrk)->output_nodes = atoi(argv[4]);
     (*ntwrk)->layers = malloc(sizeof(node_s *) * (atoi(argv[2]) + 3));
+    (*ntwrk)->current_cycle = 0;
     if (!(*ntwrk)->layers || node_per_layer(ntwrk))
     {
         //free
