@@ -22,7 +22,6 @@ int matrix_alloc(network_s *network, matrix_s  **layer)
 
     }
     layer[i] = 0;
-
 }
 
 
@@ -48,5 +47,6 @@ int matrix_init(network_s *network, network_mat_s **matrices)
 {
     if(matrices_alloc(network, matrices))
         return (-1);
+    if (matrices_)
 
 }
