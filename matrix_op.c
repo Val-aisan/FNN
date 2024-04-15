@@ -18,7 +18,7 @@ matrix_s    *dot_product(matrix_s *m1, matrix_s *m2, gradient_s **gradient)
 {
     int         m = 0;
     int         n = 0;
-    int         sum = 0;
+    double      sum = 0.0;
     int         i = 0;
     matrix_s    *new_matrix = 0;
 
@@ -32,7 +32,8 @@ matrix_s    *dot_product(matrix_s *m1, matrix_s *m2, gradient_s **gradient)
             i = 0;
             while (i < m1->row)
             {
-                sum += m1->val[0][i] * m2->val[n][i];
+                //printf("m1: %f m2: %f\n",m1->val[i][0], m2->val[n][i] );
+                sum += m1->val[i][0] * m2->val[n][i];
                 i++;
             }
             new_matrix->val[n][m] = sum;
@@ -68,8 +69,8 @@ void adjust_psy(network_s *ntwrk, gradient_s **gradient, network_mat_s *matrices
     int         i = 0;
     int         j = 0;
     int         k = 0;
-    int         w = 0;
-    int         x = 0;
+    double      w = 0;
+    double      x = 0;
     double      expected;
     double      output;
 
@@ -77,7 +78,6 @@ void adjust_psy(network_s *ntwrk, gradient_s **gradient, network_mat_s *matrices
     out = ntwrk->layers[ntwrk->hidden_layer + 1];
     while (i < ntwrk->output_nodes)
     {
-        printf("a\n");
         expected = ntwrk->observed_outputs[ntwrk->current_cycle][i];
         output = out->value;
         printf("expected: %f output: %f\n", expected, output);
@@ -89,14 +89,16 @@ void adjust_psy(network_s *ntwrk, gradient_s **gradient, network_mat_s *matrices
     while (i > -1)
     {
         j = 0;
-        while (j < matrices->layer[i]->m)
+        //printf("PSY: %d\n", i);
+        while (j < matrices->layer[i + 1]->m)
         {
             k = 0;
-            while (k < matrices->layer[i]->n)
+            while (k < matrices->layer[i + 1]->n)
             {
-                x = matrices->layer[i]->x[j];
-                w = matrices->layer[i]->w[j][k]; 
-                (*gradient)->psy[i]->val[j][k] = w * (1 - x);
+                x = matrices->layer[i + 1]->x[j];
+                w = matrices->layer[i + 1]->w[k][j];
+                //printf("x: %f, w: %f\n", x, w);
+                (*gradient)->psy[i]->val[j][k] = w * x *(1 - x);
                 k++;
             }
             j++;

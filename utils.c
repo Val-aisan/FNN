@@ -45,7 +45,7 @@ node_s  *new_node(int weights_nb)
     new_node = malloc(sizeof(node_s));
     if (!new_node)
         return (NULL);
-    new_node->weights = malloc(sizeof(double) * weights_nb );
+    new_node->weights = malloc(sizeof(double) * weights_nb);
     new_node->weights_nbr = weights_nb;
     if (!new_node->weights)
     {

@@ -22,13 +22,14 @@ int main(int argc, char **argv)
         return (0);
     //print_network_s(new_network);
     //print_input_output(new_network);
-    //print_layers(matrices);
+    print_layers(matrices);
     if (pop_gradient(matrices, &gradient))
         return (0);
     //print_gradient(gradient);
-    printf("hello\n");
     adjust_psy(new_network, &gradient, matrices);
-    print_gradient(gradient);
+    //print_gradient(gradient);
+    update_weight(gradient, &matrices);
+     print_layers(matrices);
     free_netwrk(&new_network);
     return (0);
 

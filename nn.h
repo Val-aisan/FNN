@@ -106,5 +106,6 @@ void    *ft_malloc(size_t size, gradient_s **gradient);
 
 //matrix_op
 void    adjust_psy(network_s *ntwrk, gradient_s **gradient, network_mat_s *matrices);
+void    update_weight(gradient_s *gradient, network_mat_s **matrices);
 
 #endif

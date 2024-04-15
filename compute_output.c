@@ -2,21 +2,21 @@
 #include "nn.h"
 
 //find node value of layer i, multiplying all the nodes of prev layer times their weight
-static double node_sum(node_s *node, int h_layer)
+static double node_sum(node_s *node)
 {
     double  sum = 0;
+    int     i = 0;
     node_s  *prev;
     prev = node->prev_layer;
     while (prev)
     {
+        printf("value: %f \n", prev->value);
+        printf("weights: %f\n", node->weights[i]);
         //printf("value: %f",node->value);
-        if (prev->weights)
-            sum += prev->value * prev->weights[h_layer];
-        else
-            sum += prev->value;
+        sum += prev->value * node->weights[i++];
         prev = prev->next;
     }
-    //printf("sum : %f\n", sum);
+    printf("sum : %f\n", sum);
     return(sum);
 
 }
@@ -49,8 +49,10 @@ int compute_output(network_s **ntwrk, double *inputs_set)
         k = 0;
         while(current)
         {
-            current->value = node_sum(current, k) + current->bias;
+            current->value = node_sum(current) + current->bias;
+            printf("layer: %d value: %f bias %f\n", i, current->value, current->bias);
             current->value = softplus(current->value);
+            printf("after a: %f\n", current->value);
             current = current->next;
             k++;
         }
