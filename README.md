@@ -1,5 +1,2 @@
-Hello solid guac!
-
-todo
-function to multiply two matrices row wise
-function to do dot product of matrices 
+A programm to build and train a feed forward neural network of any depth. 
+Activation function is currently softplus and cost function is sum of squared residuals.
