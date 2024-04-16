@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     adjust_psy(new_network, &gradient, matrices);
     //print_gradient(gradient);
     update_weight(gradient, &matrices);
-     print_layers(matrices);
+    print_layers(matrices);
     free_netwrk(&new_network);
     return (0);
 
