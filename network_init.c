@@ -1,11 +1,12 @@
 #include "nn.h"
 
-int node_per_layer(network_s **ntwrk)
+//complete the node_per_layer field of the netwrk structure
+static int node_per_layer(network_s **ntwrk)
 {
     int layers = (*ntwrk)->hidden_layer + 2;
     int i = 0;
 
-    (*ntwrk)->nodes_per_layer = malloc(sizeof(int) * layers + 1);
+    (*ntwrk)->nodes_per_layer = malloc(sizeof(int) * (layers + 1));
     if (!(*ntwrk)->nodes_per_layer)
         return (-1);
     while (i < layers)
@@ -19,47 +20,52 @@ int node_per_layer(network_s **ntwrk)
         i++;
     }
     (*ntwrk)->nodes_per_layer[i] = 0;
-    return (0);
-    
+    return (0); 
 }
 
-int network_init(char **argv, network_s **ntwrk)
-{   
-    *ntwrk = malloc(sizeof(network_s));
-    if (!ntwrk)
-        return (-1);
-    (*ntwrk)->input_nodes = atoi(argv[1]);
-    (*ntwrk)->hidden_layer = atoi(argv[2]);
-    (*ntwrk)->hidden_layer_nodes = atoi(argv[3]);
-    (*ntwrk)->output_nodes = atoi(argv[4]);
-    (*ntwrk)->layers = malloc(sizeof(node_s *) * (atoi(argv[2]) + 3));
-    if (!(*ntwrk)->layers || node_per_layer(ntwrk))
+//build a chained list of nodes with their respective number of weights
+static node_s  *lst_build(int nodes_nbr, int weights_nbr)
+{
+    node_s  *head = 0;
+    node_s  *node;
+    int i = 0;
+
+    //printf("nodes_nbr: %d\n", nodes_nbr);
+    while (i < nodes_nbr)
     {
-        //free
-        return (-1);
+        node = new_node(weights_nbr);
+        if (!node)
+            return (NULL);
+        add_node(node, &head);
+        i++;
     }
-    return (0);
+
+    return (head);
 }
 
-int layers_init(network_s  **ntwrk)
+//initialize each layers (chained list) of the ntwrk structure
+static int layers_init(network_s  **ntwrk)
 {
     int i = 0;
     int layers = (*ntwrk)->hidden_layer + 2;
+    int weights_nbr = 0;
 
     while (i < layers)
     {
+        if (i != 0)
+            weights_nbr = (*ntwrk)->nodes_per_layer[i - 1];
         //printf("i: %d, layers: %d\n", i,  layers);
         if (i == 0)
         {
-            (*ntwrk)->layers[i] = lst_build((*ntwrk)->input_nodes, (*ntwrk)->hidden_layer_nodes);
+            (*ntwrk)->layers[i] = lst_build((*ntwrk)->input_nodes, 0);
         }
         else if (i + 1 == layers)
         {
-            (*ntwrk)->layers[i] = lst_build((*ntwrk)->output_nodes,0);
+            (*ntwrk)->layers[i] = lst_build((*ntwrk)->output_nodes, weights_nbr);
         }
         else
         {
-            (*ntwrk)->layers[i] = lst_build((*ntwrk)->hidden_layer_nodes, (*ntwrk)->hidden_layer_nodes);
+            (*ntwrk)->layers[i] = lst_build((*ntwrk)->hidden_layer_nodes, weights_nbr);
         }
         if (!(*ntwrk)->layers[i])
             return (-1);
@@ -71,124 +77,24 @@ int layers_init(network_s  **ntwrk)
 
 }
 
-int data_init(char *file, network_s **new_network)
-{
-    FILE*   fp = fopen(file, "r");
-    char    line[200];
-    int     row = 0;
-    char    *token;
-    int     i = 0; 
-
-    if (!fp)
+//initialize non-file related fields of ntwrk structure
+int network_init(char **argv, network_s **ntwrk)
+{   
+    *ntwrk = malloc(sizeof(network_s));
+    if (!ntwrk)
+        return (-1);
+    (*ntwrk)->input_nodes = atoi(argv[1]);
+    (*ntwrk)->hidden_layer = atoi(argv[2]);
+    (*ntwrk)->hidden_layer_nodes = atoi(argv[3]);
+    (*ntwrk)->output_nodes = atoi(argv[4]);
+    (*ntwrk)->layers = malloc(sizeof(node_s *) * (atoi(argv[2]) + 3));
+    (*ntwrk)->current_cycle = 0;
+    if (!(*ntwrk)->layers || node_per_layer(ntwrk))
     {
-        perror("Can't open the file");
+        //free
         return (-1);
     }
-    while (fgets(line, 200, fp) != NULL)
-    {
-        if (row != 0)
-        {
-            i = 0;
-            token  = strtok(line, ",");
-            while (i < (*new_network)->input_nodes)
-            {
-                (*new_network)->inputs[row - 1][i] = (double)atof(token);
-                token = strtok(NULL, ",");
-                i++;
-            }
-            (*new_network)->observed_outputs[row - 1] = (double)atof(token);
-        }
-        row++;
-    }
-    fclose(fp);
+    if (layers_init(ntwrk))
+        return (-1);
     return (0);
-}
-
-int ntwrk_inputs_alloc(int rows, int columns, network_s **new_network)
-{
-    printf("rows: %d\n", rows);
-    printf("columns: %d\n", columns);
-    int i = 0;
-    (*new_network)->data_cycles = rows - 1;
-    (*new_network)->observed_outputs = malloc(sizeof(double) * rows - 1);
-    if (!((*new_network)->observed_outputs))
-    {
-        perror("Bad alloc for observed outputs");
-        return (-1);
-    }
-    (*new_network)->inputs = malloc(sizeof(double*) * rows);
-    if (!((*new_network)->inputs))
-    {
-        perror("Bad alloc for inputs");
-        return (-1);
-    }
-    while (i < (rows - 1))
-    {
-        (*new_network)->inputs[i] = malloc(sizeof(double) * columns - 1);
-        if (!((*new_network)->inputs[i]))
-        {
-            perror("Bad alloc for inputs");
-            return (-1);
-        }
-        i++;
-    }
-    (*new_network)->inputs[i] = 0;
-    return (0);
-}
-
-int data_file_format(char *file, network_s **new_network)
-{
-    FILE*   fp = fopen(file, "r");
-    char    line[200];
-    int     rows = 0;
-    int     columns = 0;
-    char    *token;
-
-    if (!fp)
-    {
-        perror("Can't open the file");
-        return (-1);
-    }
-    printf("file: %s\n", file);
-    while (fgets(line, 200, fp) != NULL)
-    {
-        rows++;
-        if (rows == 1)
-        {
-            token  = strtok(line, ",");
-            while (token != NULL)
-            {
-                columns++;
-                token = strtok(NULL, ",");
-            }
-        }
-    }
-    if (rows != ((*new_network)->input_nodes + 1))
-    {
-        printf("Error: Inputs nodes do not match training file data\n");
-        return (-1);
-    }
-    fclose(fp);
-    if (ntwrk_inputs_alloc(rows, columns, new_network) == -1)
-        return (-1);
-    return (0);  
-}
-
-node_s  *lst_build(int nodes_nbr, int hiddenl_nodes)
-{
-    node_s  *head = 0;
-    node_s  *node;
-    int i = 0;
-
-    //printf("nodes_nbr: %d\n", nodes_nbr);
-    while (i < nodes_nbr)
-    {
-        node = new_node(hiddenl_nodes);
-        if (!node)
-            return (NULL);
-        add_node(node, &head);
-        i++;
-    }
-
-    return (head);
 }

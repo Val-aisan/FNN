@@ -1,64 +1,36 @@
 #include "nn.h"
 
-int is_error(int argc, char **argv)
-{
-    int i = 1;
-
-    if (argc != 6)
-    {
-        printf("\nToo few or too many arguments provided\n");
-        printf("usage : \"input nodes\" \"hidden layers\" \"node per hidden layer\" \"output nodes\" \"training file\" \n");
-        return (-1);
-    }
-    while (i < 5)
-    {
-        if ((i == 1 || i == 4) && atoi(argv[i]) < 1)
-        {
-            printf("\nBad value  provided as argument \n");
-            return (-1);
-        }
-        if (atoi(argv[i]) < 0)
-        {
-            printf("\nBad value  provided as argument \n");
-            return (-1);
-        }
-        i++;
-    }
-    if (!fopen(argv[i], "r"))
-    {
-        printf("Error: access to training file\n");
-        return (-1);
-    }
-    return (0);
-}
-
 //usage: ./programm "input nodes" "hidden layer" "node per hidden layer" "output nodes" "training file"
 int main(int argc, char **argv)
 {
     network_s       *new_network;
-    network_mat_s   *network_matrices;
+    network_mat_s   *matrices;
+    gradient_s      *gradient;
     int             cycle = 0;
     
     if (is_error(argc, argv))
         return (0);
     if (network_init(argv, &new_network))
         return (0);
-    if (layers_init(&new_network))
-        return (0);
-    if (data_file_format(argv[5], &new_network))
-        return (0);
-    if (data_init(argv[5], &new_network))
+    if (file_data_init(&new_network, argv))
         return (0);
     if (nodes_init(&new_network))
         return (0);
-    update_inputl(&new_network, new_network->inputs[cycle]);
-    if (matrix_init(new_network, &network_matrices))
+    compute_output(&new_network, new_network->inputs[cycle]);
+    matrices = matrix_init(new_network);
+    if (!matrices)
         return (0);
-    //if (layer_sum(&new_network))
-    //   return (0);
-    print_network_s(new_network);
-    cycle++;
-    //if (nodes_init(&new_network))
-     //   return(0);
+    //print_network_s(new_network);
+    //print_input_output(new_network);
+    print_layers(matrices);
+    if (pop_gradient(matrices, &gradient))
+        return (0);
+    //print_gradient(gradient);
+    adjust_psy(new_network, &gradient, matrices);
+    //print_gradient(gradient);
+    update_weight(gradient, &matrices);
+     print_layers(matrices);
+    free_netwrk(&new_network);
+    return (0);
 
 }   

@@ -1,66 +1,29 @@
 #include "nn.h"
 
+//normale distribution for weights initialization
+double  normal_distr(void)
+{
+    double      u1;
+    double      u2;
+    double      z;
+
+    u1 = ((double)rand()/(double)(RAND_MAX));
+    //printf("rand: %f\n", u1); 
+    u2 = ((double)rand()/(double)(RAND_MAX));
+    //printf("rand: %f\n", u2); 
+    z = sqrt((-2) * log(u1)) * cos(2 * PI * u2);
+    //printf("rand: %f\n", z); 
+    return (z);
+
+}
+
+//activation function
 double  softplus(double x)
 {
     return (log(1 + exp(x)));
 }
 
-void    print_network_s(network_s *new_network)
-{
-    int i = 0;
-    int j = 0;
-    printf("\n");
-    printf("ntwrk input: %d\n",new_network->input_nodes);
-    printf("ntwrk output: %d\n",new_network->output_nodes);
-    printf("ntwrk hidden_layers: %d\n",new_network->hidden_layer);
-    printf("ntwrk nodes hidden layer: %d\n",new_network->hidden_layer_nodes);
-    printf("\n");
-    printf("\n");
-    while (new_network->layers[i])
-    {
-        printf("ntwrk_layer%d\n",i);
-        node_s *ptr = new_network->layers[i];
-        while (ptr)
-        {
-            printf("node, ");
-            printf("layer: %d, ", ptr->layer);
-            printf("bias: %f, ", ptr->bias);
-            printf("value: %f", ptr->value);
-            j = 0;
-            while (j < new_network->hidden_layer_nodes)
-            {
-                printf("weight%d: %f, ", j, ptr->weights[j]);
-                j++;
-            }
-            if  (i == 3)
-                printf("hey\n");
-            printf("value: %f\n", ptr->value);
-
-            ptr = ptr->next;
-        }
-        printf("\n");
-        i++;
-    }
-    i = 0;
-    while (new_network->inputs[i] != 0)
-    {
-        j = 0;
-        while (j < new_network->input_nodes)
-        {
-            printf("input%d: %f\n", i, new_network->inputs[i][j]);
-            j++;
-        }
-        i++;
-    }
-    i = 0;
-    while (i < new_network->data_cycles)
-    {
-         printf("output%d: %f\n", i, new_network->observed_outputs[i]);
-         i++;
-    }
-
-}
-
+//add node to structure
 void    add_node(node_s *new_node, node_s **head)
 {
     node_s  *current = *head;
@@ -74,14 +37,16 @@ void    add_node(node_s *new_node, node_s **head)
     current->next = new_node;
 }
 
-node_s  *new_node(int nodes_hiddenl)
+//create new_node for structure
+node_s  *new_node(int weights_nb)
 {
     node_s  *new_node;
 
     new_node = malloc(sizeof(node_s));
     if (!new_node)
         return (NULL);
-    new_node->weights = malloc(sizeof(double) * nodes_hiddenl);
+    new_node->weights = malloc(sizeof(double) * weights_nb);
+    new_node->weights_nbr = weights_nb;
     if (!new_node->weights)
     {
         free(new_node);
@@ -90,4 +55,37 @@ node_s  *new_node(int nodes_hiddenl)
     new_node->next = 0;
     return(new_node);
 
+}
+
+//small check on cmd line arguments provided by user
+int is_error(int argc, char **argv)
+{
+    int i = 1;
+
+    if (argc != 6)
+    {
+        printf("\nToo few or too many arguments provided\n");
+        printf("usage : \"input nodes\" \"hidden layers\" \"node per hidden layer\" \"output nodes\" \"training file\" \n");
+        return (-1);
+    }
+    while (i < 5)
+    {
+        if ((i == 1 || i == 4) && atoi(argv[i]) < 1)
+        {
+            printf("\nBad value  provided as argument \n");
+            return (-1);
+        }
+        if (atoi(argv[i]) < 0)
+        {
+            printf("\nBad value  provided as argument \n");
+            return (-1);
+        }
+        i++;
+    }
+    if (!fopen(argv[i], "r"))
+    {
+        printf("Error: access to training file\n");
+        return (-1);
+    }
+    return (0);
 }
